@@ -5,6 +5,7 @@ import 'package:shopsphere/features/auth/presentation/login_screen.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_state.dart';
 import 'package:shopsphere/features/auth/presentation/splash_screen.dart';
+import 'package:shopsphere/features/products/presentation/screens/product_details_screen.dart';
 import 'package:shopsphere/features/products/presentation/screens/products_screen.dart';
 
 /// Application route path constants.
@@ -85,6 +86,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: AppRoutes.home,
         name: 'home',
         builder: (context, state) => const ProductsScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.productDetails,
+        name: 'productDetails',
+        builder: (context, state) {
+          final idParam = state.pathParameters['id'] ?? '0';
+          final id = int.tryParse(idParam) ?? 0;
+          return ProductDetailsScreen(productId: id);
+        },
       ),
     ],
   );

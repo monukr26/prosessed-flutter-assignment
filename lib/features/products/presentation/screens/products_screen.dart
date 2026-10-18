@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
@@ -273,14 +274,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
                           return ProductCard(
                             product: product,
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    '${product.title} selected (Details screen coming in next milestone)',
-                                  ),
-                                  duration: const Duration(seconds: 1),
-                                ),
-                              );
+                              context.push('/products/${product.id}');
                             },
                           );
                         }, childCount: catalogState.products.length),
