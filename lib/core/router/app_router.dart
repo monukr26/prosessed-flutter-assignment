@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:shopsphere/features/auth/presentation/home_placeholder_screen.dart';
 import 'package:shopsphere/features/auth/presentation/login_screen.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_state.dart';
 import 'package:shopsphere/features/auth/presentation/splash_screen.dart';
+import 'package:shopsphere/features/products/presentation/screens/products_screen.dart';
 
 /// Application route path constants.
 class AppRoutes {
@@ -49,7 +49,7 @@ class RouterNotifier extends ChangeNotifier {
       return isGoingToLogin ? null : AppRoutes.login;
     }
 
-    // Authenticated users on splash or login are forwarded to Home
+    // Authenticated users on splash or login are forwarded to Home catalogue
     if (isGoingToLogin || isGoingToSplash) {
       return AppRoutes.home;
     }
@@ -84,7 +84,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.home,
         name: 'home',
-        builder: (context, state) => const HomePlaceholderScreen(),
+        builder: (context, state) => const ProductsScreen(),
       ),
     ],
   );
