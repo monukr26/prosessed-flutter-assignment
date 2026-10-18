@@ -7,6 +7,7 @@ import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
+import 'package:shopsphere/features/cart/presentation/widgets/cart_badge_icon.dart';
 import 'package:shopsphere/features/products/presentation/providers/product_catalog_notifier.dart';
 import 'package:shopsphere/features/products/presentation/providers/product_catalog_state.dart';
 import 'package:shopsphere/features/products/presentation/widgets/category_chips_bar.dart';
@@ -130,23 +131,8 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
           ],
         ),
         actions: [
-          // Cart Icon Placeholder with Badge
-          IconButton(
-            tooltip: 'Cart',
-            icon: Badge(
-              label: const Text('0'),
-              backgroundColor: AppColors.secondary,
-              child: const Icon(Icons.shopping_cart_outlined),
-            ),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Cart feature is in the next milestone'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
-            },
-          ),
+          // Live Cart Action with Badge
+          const CartBadgeIcon(),
           // Logout Action
           IconButton(
             tooltip: 'Sign Out',

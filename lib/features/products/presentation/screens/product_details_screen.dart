@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/router/app_router.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
+import 'package:shopsphere/features/cart/presentation/providers/cart_notifier.dart';
+import 'package:shopsphere/features/cart/presentation/widgets/cart_badge_icon.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/presentation/providers/product_details_notifier.dart';
 import 'package:shopsphere/features/products/presentation/providers/product_details_state.dart';
@@ -38,6 +41,7 @@ class ProductDetailsScreen extends ConsumerWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
+        actions: const [CartBadgeIcon()],
       ),
       body: switch (state.status) {
         ProductDetailsStatus.initial ||
@@ -392,15 +396,25 @@ class ProductDetailsScreen extends ConsumerWidget {
               child: FilledButton.icon(
                 onPressed: state.isOutOfStock
                     ? null
-                    : () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Added ${state.quantity}x ${product.title} to cart (\$$totalPrice). Cart persistence in next milestone.',
+                    : () async {
+                        final added = await ref
+                            .read(cartNotifierProvider.notifier)
+                            .addToCart(product, quantity: state.quantity);
+                        if (context.mounted && added) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'Added ${state.quantity}x ${product.title} to cart',
+                              ),
+                              action: SnackBarAction(
+                                label: 'View Cart',
+                                onPressed: () => context.push(AppRoutes.cart),
+                              ),
+                              duration: const Duration(seconds: 3),
                             ),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
+                          );
+                        }
                       },
                 icon: const Icon(Icons.add_shopping_cart_rounded),
                 label: Text(

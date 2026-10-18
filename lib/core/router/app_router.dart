@@ -5,6 +5,9 @@ import 'package:shopsphere/features/auth/presentation/login_screen.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_state.dart';
 import 'package:shopsphere/features/auth/presentation/splash_screen.dart';
+import 'package:shopsphere/features/cart/domain/entities/checkout_order.dart';
+import 'package:shopsphere/features/cart/presentation/screens/cart_screen.dart';
+import 'package:shopsphere/features/cart/presentation/screens/order_confirmation_screen.dart';
 import 'package:shopsphere/features/products/presentation/screens/product_details_screen.dart';
 import 'package:shopsphere/features/products/presentation/screens/products_screen.dart';
 
@@ -18,6 +21,7 @@ class AppRoutes {
   static const String products = '/products';
   static const String productDetails = '/products/:id';
   static const String cart = '/cart';
+  static const String orderConfirmation = '/order-confirmation';
   static const String profile = '/profile';
 }
 
@@ -94,6 +98,22 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final idParam = state.pathParameters['id'] ?? '0';
           final id = int.tryParse(idParam) ?? 0;
           return ProductDetailsScreen(productId: id);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.cart,
+        name: 'cart',
+        builder: (context, state) => const CartScreen(),
+      ),
+      GoRoute(
+        path: AppRoutes.orderConfirmation,
+        name: 'orderConfirmation',
+        builder: (context, state) {
+          final order = state.extra;
+          if (order is CheckoutOrder) {
+            return OrderConfirmationScreen(order: order);
+          }
+          return const ProductsScreen();
         },
       ),
     ],
