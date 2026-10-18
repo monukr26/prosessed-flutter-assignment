@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
+import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 
-/// Initial splash screen showing ShopSphere branding.
-class SplashScreen extends StatelessWidget {
+/// Initial splash screen that verifies session and initiates auto-routing.
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Validate stored session on launch
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(authNotifierProvider.notifier).checkAuthStatus();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
