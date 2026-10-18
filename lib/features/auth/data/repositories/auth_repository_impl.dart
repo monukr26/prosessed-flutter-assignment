@@ -73,6 +73,30 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Result.success(user);
     } on AuthException catch (e) {
+      // If 401 Unauthorized, attempt token refresh before clearing session
+      if (e.statusCode == 401) {
+        final refreshToken = await _localDataSource.getRefreshToken();
+        if (refreshToken != null && refreshToken.isNotEmpty) {
+          try {
+            final newTokens = await _remoteDataSource.refreshSession(
+              refreshToken,
+            );
+            await _localDataSource.saveTokens(
+              accessToken: newTokens.accessToken,
+              refreshToken: newTokens.refreshToken,
+            );
+            _apiClient.updateAuthToken(newTokens.accessToken);
+            final user = await _remoteDataSource.getCurrentUser(
+              newTokens.accessToken,
+            );
+            await _localDataSource.saveUser(user);
+            return Result.success(user);
+          } catch (_) {
+            // Refresh failed or rejected, proceed with clearing session
+          }
+        }
+      }
+
       // Clear invalid session tokens
       await _localDataSource.clearSession();
       _apiClient.updateAuthToken(null);

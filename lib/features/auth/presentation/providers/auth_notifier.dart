@@ -71,9 +71,17 @@ class AuthNotifier extends Notifier<AuthState> {
 
   /// Securely logs out user and clears tokens.
   Future<void> logout() async {
+    if (state is AuthLoading) return;
     state = const AuthLoading();
     await _logoutUseCase();
     state = const Unauthenticated();
+  }
+
+  /// Sets state to unauthenticated with explanatory session-expired message.
+  void handleSessionExpired([
+    String message = 'Your session has expired. Please sign in again.',
+  ]) {
+    state = Unauthenticated(message);
   }
 
   /// Clears any transient login error.

@@ -139,6 +139,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const SizedBox(height: AppConstants.space16),
                     ],
 
+                    // Session Expired Banner
+                    if (authState is Unauthenticated &&
+                        authState.message != null &&
+                        authState.message!.isNotEmpty) ...[
+                      Container(
+                        padding: const EdgeInsets.all(AppConstants.space12),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: theme.colorScheme.tertiary.withAlpha(80),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.info_outline_rounded,
+                              color: theme.colorScheme.onTertiaryContainer,
+                              size: 22,
+                            ),
+                            const SizedBox(width: AppConstants.space12),
+                            Expanded(
+                              child: Text(
+                                authState.message!,
+                                style: TextStyle(
+                                  color: theme.colorScheme.onTertiaryContainer,
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: AppConstants.space16),
+                    ],
+
                     // Username Field
                     TextFormField(
                       controller: _usernameController,

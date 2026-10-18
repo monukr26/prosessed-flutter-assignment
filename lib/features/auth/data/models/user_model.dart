@@ -10,6 +10,7 @@ class UserModel extends User {
     required super.lastName,
     super.gender,
     super.image,
+    super.phone,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +22,7 @@ class UserModel extends User {
       lastName: json['lastName'] as String? ?? '',
       gender: json['gender'] as String?,
       image: json['image'] as String?,
+      phone: json['phone'] as String?,
     );
   }
 
@@ -33,6 +35,7 @@ class UserModel extends User {
       'lastName': lastName,
       if (gender != null) 'gender': gender,
       if (image != null) 'image': image,
+      if (phone != null) 'phone': phone,
     };
   }
 
@@ -45,6 +48,7 @@ class UserModel extends User {
       lastName: entity.lastName,
       gender: entity.gender,
       image: entity.image,
+      phone: entity.phone,
     );
   }
 }

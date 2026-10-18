@@ -2,11 +2,11 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/router/app_router.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/core/widgets/empty_view.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
-import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:shopsphere/features/cart/presentation/widgets/cart_badge_icon.dart';
 import 'package:shopsphere/features/products/presentation/providers/product_catalog_notifier.dart';
 import 'package:shopsphere/features/products/presentation/providers/product_catalog_state.dart';
@@ -133,13 +133,11 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
         actions: [
           // Live Cart Action with Badge
           const CartBadgeIcon(),
-          // Logout Action
+          // User Profile
           IconButton(
-            tooltip: 'Sign Out',
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () {
-              ref.read(authNotifierProvider.notifier).logout();
-            },
+            tooltip: 'My Profile',
+            icon: const Icon(Icons.person_outline_rounded),
+            onPressed: () => context.push(AppRoutes.profile),
           ),
         ],
       ),

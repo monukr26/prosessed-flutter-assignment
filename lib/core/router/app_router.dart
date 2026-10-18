@@ -10,6 +10,7 @@ import 'package:shopsphere/features/cart/presentation/screens/cart_screen.dart';
 import 'package:shopsphere/features/cart/presentation/screens/order_confirmation_screen.dart';
 import 'package:shopsphere/features/products/presentation/screens/product_details_screen.dart';
 import 'package:shopsphere/features/products/presentation/screens/products_screen.dart';
+import 'package:shopsphere/features/profile/presentation/screens/profile_screen.dart';
 
 /// Application route path constants.
 class AppRoutes {
@@ -115,6 +116,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           }
           return const ProductsScreen();
         },
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        name: 'profile',
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

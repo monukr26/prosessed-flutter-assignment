@@ -11,6 +11,10 @@ abstract class AuthRemoteDataSource {
   });
 
   Future<UserModel> getCurrentUser(String token);
+
+  Future<({String accessToken, String refreshToken})> refreshSession(
+    String refreshToken,
+  );
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
@@ -70,6 +74,38 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (e.response?.statusCode == 401) {
         throw const AuthException(
           'Session expired. Please sign in again.',
+          statusCode: 401,
+        );
+      }
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<({String accessToken, String refreshToken})> refreshSession(
+    String refreshToken,
+  ) async {
+    try {
+      final response = await _dio.post(
+        ApiEndpoints.refresh,
+        data: {'refreshToken': refreshToken, 'expiresInMins': 30},
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data as Map<String, dynamic>;
+        final access = data['accessToken'] as String? ?? '';
+        final refresh = data['refreshToken'] as String? ?? refreshToken;
+        return (accessToken: access, refreshToken: refresh);
+      } else {
+        throw ServerException(
+          'Failed to refresh session with status code: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 400) {
+        throw const AuthException(
+          'Refresh token expired. Please sign in again.',
           statusCode: 401,
         );
       }

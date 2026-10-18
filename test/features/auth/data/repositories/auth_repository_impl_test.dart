@@ -150,6 +150,9 @@ void main() {
             statusCode: 401,
           ),
         );
+        when(
+          () => mockLocalDataSource.getRefreshToken(),
+        ).thenAnswer((_) async => null);
         when(() => mockLocalDataSource.clearSession()).thenAnswer((_) async {});
 
         final result = await repository.getCurrentUser();

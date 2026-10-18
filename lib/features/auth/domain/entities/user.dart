@@ -11,6 +11,7 @@ class User extends Equatable {
   final String lastName;
   final String? gender;
   final String? image;
+  final String? phone;
 
   const User({
     required this.id,
@@ -20,6 +21,7 @@ class User extends Equatable {
     required this.lastName,
     this.gender,
     this.image,
+    this.phone,
   });
 
   String get fullName => '$firstName $lastName'.trim();
@@ -33,5 +35,6 @@ class User extends Equatable {
     lastName,
     gender,
     image,
+    phone,
   ];
 }
