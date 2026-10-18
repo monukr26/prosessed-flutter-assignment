@@ -1,3 +1,4 @@
+import 'package:shopsphere/features/products/data/models/review_model.dart';
 import 'package:shopsphere/features/products/domain/entities/product.dart';
 
 /// Data Transfer Object for [Product] entity.
@@ -14,9 +15,16 @@ class ProductModel extends Product {
     super.brand,
     required super.thumbnail,
     super.images,
+    super.reviews,
   });
 
   factory ProductModel.fromJson(Map<String, dynamic> json) {
+    final rawReviews = json['reviews'] as List<dynamic>? ?? const [];
+    final reviews = rawReviews
+        .whereType<Map<String, dynamic>>()
+        .map(ReviewModel.fromJson)
+        .toList();
+
     return ProductModel(
       id: (json['id'] as num?)?.toInt() ?? 0,
       title: json['title'] as String? ?? '',
@@ -34,6 +42,7 @@ class ProductModel extends Product {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      reviews: reviews,
     );
   }
 
@@ -50,6 +59,9 @@ class ProductModel extends Product {
       if (brand != null) 'brand': brand,
       'thumbnail': thumbnail,
       'images': images,
+      'reviews': reviews
+          .map((r) => ReviewModel.fromEntity(r).toJson())
+          .toList(),
     };
   }
 
@@ -66,6 +78,7 @@ class ProductModel extends Product {
       brand: entity.brand,
       thumbnail: entity.thumbnail,
       images: entity.images,
+      reviews: entity.reviews,
     );
   }
 }

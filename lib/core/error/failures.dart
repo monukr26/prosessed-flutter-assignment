@@ -35,6 +35,13 @@ class AuthFailure extends Failure {
   ]) : super(statusCode: statusCode);
 }
 
+class NotFoundFailure extends Failure {
+  const NotFoundFailure([
+    super.message = 'The requested item was not found.',
+    int? statusCode = 404,
+  ]) : super(statusCode: statusCode);
+}
+
 class CacheFailure extends Failure {
   const CacheFailure([super.message = 'Failed to load local cached data.']);
 }

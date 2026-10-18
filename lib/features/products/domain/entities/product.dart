@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:shopsphere/features/products/domain/entities/review.dart';
 
 /// Domain entity representing a product in the catalogue.
 ///
@@ -15,6 +16,7 @@ class Product extends Equatable {
   final String? brand;
   final String thumbnail;
   final List<String> images;
+  final List<Review> reviews;
 
   const Product({
     required this.id,
@@ -28,6 +30,7 @@ class Product extends Equatable {
     this.brand,
     required this.thumbnail,
     this.images = const [],
+    this.reviews = const [],
   });
 
   /// Calculates the discounted price if discountPercentage > 0.
@@ -52,5 +55,6 @@ class Product extends Equatable {
     brand,
     thumbnail,
     images,
+    reviews,
   ];
 }

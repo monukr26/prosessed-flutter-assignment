@@ -3,6 +3,7 @@ import 'package:shopsphere/core/error/exceptions.dart';
 import 'package:shopsphere/core/network/api_endpoints.dart';
 import 'package:shopsphere/features/products/data/models/category_model.dart';
 import 'package:shopsphere/features/products/data/models/paginated_products_model.dart';
+import 'package:shopsphere/features/products/data/models/product_model.dart';
 import 'package:shopsphere/features/products/domain/entities/sort_option.dart';
 
 abstract class ProductRemoteDataSource {
@@ -25,6 +26,8 @@ abstract class ProductRemoteDataSource {
     int skip = 0,
     SortOption sortOption = SortOption.none,
   });
+
+  Future<ProductModel> getProductDetails(int id);
 
   Future<List<CategoryModel>> getCategories();
 }
@@ -138,6 +141,27 @@ class ProductRemoteDataSourceImpl implements ProductRemoteDataSource {
         );
       }
     } on DioException catch (e) {
+      throw _handleDioError(e);
+    }
+  }
+
+  @override
+  Future<ProductModel> getProductDetails(int id) async {
+    try {
+      final response = await _dio.get(ApiEndpoints.productDetails(id));
+
+      if (response.statusCode == 200 && response.data != null) {
+        return ProductModel.fromJson(response.data as Map<String, dynamic>);
+      } else {
+        throw ServerException(
+          'Failed to load product details with status: ${response.statusCode}',
+          statusCode: response.statusCode,
+        );
+      }
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) {
+        throw const NotFoundException('Product not found', statusCode: 404);
+      }
       throw _handleDioError(e);
     }
   }

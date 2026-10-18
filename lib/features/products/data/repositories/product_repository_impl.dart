@@ -4,6 +4,7 @@ import 'package:shopsphere/core/utils/result.dart';
 import 'package:shopsphere/features/products/data/datasources/product_remote_data_source.dart';
 import 'package:shopsphere/features/products/domain/entities/category.dart';
 import 'package:shopsphere/features/products/domain/entities/paginated_products.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/sort_option.dart';
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
 
@@ -125,6 +126,24 @@ class ProductRepositoryImpl implements ProductRepository {
     } catch (e) {
       return Result.failure(
         UnknownFailure('Unexpected error loading category products: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Result<Product>> getProductDetails(int id) async {
+    try {
+      final product = await _remoteDataSource.getProductDetails(id);
+      return Result.success(product);
+    } on NotFoundException catch (e) {
+      return Result.failure(NotFoundFailure(e.message, e.statusCode));
+    } on NetworkException catch (e) {
+      return Result.failure(NetworkFailure(e.message));
+    } on ServerException catch (e) {
+      return Result.failure(ServerFailure(e.message, e.statusCode));
+    } catch (e) {
+      return Result.failure(
+        UnknownFailure('Unexpected error loading product details: $e'),
       );
     }
   }

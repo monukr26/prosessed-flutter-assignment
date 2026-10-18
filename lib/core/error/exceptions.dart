@@ -25,6 +25,11 @@ class AuthException extends AppException {
   const AuthException(super.message, {super.statusCode});
 }
 
+/// Thrown on 404 Not Found responses.
+class NotFoundException extends AppException {
+  const NotFoundException(super.message, {super.statusCode = 404});
+}
+
 /// Thrown when local persistence / cache operations fail.
 class CacheException extends AppException {
   const CacheException(super.message, {super.statusCode});

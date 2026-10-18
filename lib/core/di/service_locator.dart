@@ -14,6 +14,7 @@ import 'package:shopsphere/features/products/data/repositories/product_repositor
 import 'package:shopsphere/features/products/domain/repositories/product_repository.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_categories_usecase.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_products_by_category_usecase.dart';
+import 'package:shopsphere/features/products/domain/usecases/get_product_details_usecase.dart';
 import 'package:shopsphere/features/products/domain/usecases/get_products_usecase.dart';
 import 'package:shopsphere/features/products/domain/usecases/search_products_usecase.dart';
 
@@ -73,5 +74,8 @@ Future<void> initDependencies() async {
   );
   sl.registerLazySingleton<GetCategoriesUseCase>(
     () => GetCategoriesUseCase(sl()),
+  );
+  sl.registerLazySingleton<GetProductDetailsUseCase>(
+    () => GetProductDetailsUseCase(sl()),
   );
 }

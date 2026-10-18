@@ -1,6 +1,7 @@
 import 'package:shopsphere/core/utils/result.dart';
 import 'package:shopsphere/features/products/domain/entities/category.dart';
 import 'package:shopsphere/features/products/domain/entities/paginated_products.dart';
+import 'package:shopsphere/features/products/domain/entities/product.dart';
 import 'package:shopsphere/features/products/domain/entities/sort_option.dart';
 
 /// Contract for Product Repository in the domain layer.
@@ -27,6 +28,9 @@ abstract class ProductRepository {
     int skip = 0,
     SortOption sortOption = SortOption.none,
   });
+
+  /// Retrieves full product details including images and reviews by [id].
+  Future<Result<Product>> getProductDetails(int id);
 
   /// Retrieves list of product categories.
   Future<Result<List<Category>>> getCategories();
