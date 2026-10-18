@@ -1,8 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shopsphere/app.dart';
+import 'package:shopsphere/core/di/service_locator.dart';
 
 void main() {
+  setUp(() async {
+    await sl.reset();
+    await initDependencies();
+  });
+
+  tearDown(() async {
+    await sl.reset();
+  });
+
   testWidgets('ShopSphereApp smoke test - renders Splash branding', (
     WidgetTester tester,
   ) async {
