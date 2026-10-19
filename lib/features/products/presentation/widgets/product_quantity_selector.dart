@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 
-/// Accessible Quantity Selector with minimum 48dp tap targets.
+/// Accessible Quantity Selector with minimum 48dp tap targets and crisp Material 3 design.
 class ProductQuantitySelector extends StatelessWidget {
   final int quantity;
   final int maxStock;
@@ -24,18 +24,16 @@ class ProductQuantitySelector extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withAlpha(50),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withAlpha(80),
-        ),
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppConstants.radius12),
+        border: Border.all(color: theme.colorScheme.outline, width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           // Decrement button
           IconButton(
-            icon: const Icon(Icons.remove_rounded),
+            icon: const Icon(Icons.remove_rounded, size: 18),
             tooltip: 'Decrease quantity',
             onPressed: canDecrement ? onDecrement : null,
             constraints: const BoxConstraints(
@@ -45,21 +43,21 @@ class ProductQuantitySelector extends StatelessWidget {
           ),
 
           // Quantity indicator
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppConstants.space12,
-            ),
+          Container(
+            constraints: const BoxConstraints(minWidth: 36),
+            alignment: Alignment.center,
             child: Text(
               '$quantity',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
+                color: theme.colorScheme.onSurface,
               ),
             ),
           ),
 
           // Increment button
           IconButton(
-            icon: const Icon(Icons.add_rounded),
+            icon: const Icon(Icons.add_rounded, size: 18),
             tooltip: 'Increase quantity',
             onPressed: canIncrement ? onIncrement : null,
             constraints: const BoxConstraints(

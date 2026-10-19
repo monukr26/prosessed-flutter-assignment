@@ -5,7 +5,7 @@ import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_state.dart';
 
-/// Material 3 Login Screen with form validation, inline errors and loading state.
+/// Material 3 Login Screen with accessible form validation, error banners, and responsive layout.
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
@@ -27,9 +27,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _submit() {
-    // Dismiss keyboard
     FocusScope.of(context).unfocus();
-
     if (_formKey.currentState?.validate() ?? false) {
       ref.read(authNotifierProvider.notifier).clearError();
       ref
@@ -53,12 +51,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final isLoading = authState is AuthLoading;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
             padding: const EdgeInsets.symmetric(
               horizontal: AppConstants.space24,
-              vertical: AppConstants.space16,
+              vertical: AppConstants.space24,
             ),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 420),
@@ -68,35 +68,53 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Brand Icon
+                    // Brand Icon Emblem
                     Center(
                       child: Container(
-                        padding: const EdgeInsets.all(AppConstants.space20),
+                        width: 72,
+                        height: 72,
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withAlpha(25),
-                          shape: BoxShape.circle,
+                          gradient: const LinearGradient(
+                            colors: [
+                              AppColors.primaryLight,
+                              AppColors.primaryDark,
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withAlpha(35),
+                              blurRadius: 16,
+                              offset: const Offset(0, 6),
+                            ),
+                          ],
                         ),
-                        child: const Icon(
-                          Icons.shopping_bag_outlined,
-                          size: 56,
-                          color: AppColors.primary,
+                        child: const Center(
+                          child: Icon(
+                            Icons.shopping_bag_rounded,
+                            size: 36,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: AppConstants.space20),
+                    const SizedBox(height: AppConstants.space24),
 
                     // Header & Subtitle
                     Text(
                       'Welcome to ShopSphere',
                       style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: -0.5,
                         color: theme.colorScheme.onSurface,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppConstants.space8),
                     Text(
-                      'Sign in to explore verified catalogue & products',
+                      'Sign in to explore curated products & deals',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -104,30 +122,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: AppConstants.space24),
 
-                    // Inline Error Banner (for invalid credentials or errors)
+                    // Inline Error Banner
                     if (authState is AuthError) ...[
                       Container(
                         padding: const EdgeInsets.all(AppConstants.space12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(12),
+                          color: const Color(0xFFFEE2E2),
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.radius12,
+                          ),
                           border: Border.all(
-                            color: theme.colorScheme.error.withAlpha(80),
+                            color: const Color(0xFFFCA5A5),
+                            width: 1,
                           ),
                         ),
                         child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.error_outline_rounded,
-                              color: theme.colorScheme.error,
-                              size: 22,
+                              color: AppColors.error,
+                              size: 20,
                             ),
                             const SizedBox(width: AppConstants.space12),
                             Expanded(
                               child: Text(
                                 authState.message,
-                                style: TextStyle(
-                                  color: theme.colorScheme.onErrorContainer,
+                                style: const TextStyle(
+                                  color: Color(0xFF991B1B),
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -146,25 +168,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Container(
                         padding: const EdgeInsets.all(AppConstants.space12),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(12),
+                          color: const Color(0xFFFEF3C7),
+                          borderRadius: BorderRadius.circular(
+                            AppConstants.radius12,
+                          ),
                           border: Border.all(
-                            color: theme.colorScheme.tertiary.withAlpha(80),
+                            color: const Color(0xFFFCD34D),
+                            width: 1,
                           ),
                         ),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.info_outline_rounded,
-                              color: theme.colorScheme.onTertiaryContainer,
-                              size: 22,
+                              color: Color(0xFFB45309),
+                              size: 20,
                             ),
                             const SizedBox(width: AppConstants.space12),
                             Expanded(
                               child: Text(
                                 authState.message!,
-                                style: TextStyle(
-                                  color: theme.colorScheme.onTertiaryContainer,
+                                style: const TextStyle(
+                                  color: Color(0xFF92400E),
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -181,6 +206,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _usernameController,
                       enabled: !isLoading,
                       textInputAction: TextInputAction.next,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
                       decoration: const InputDecoration(
                         labelText: 'Username',
                         hintText: 'Enter your username',
@@ -205,11 +234,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       onFieldSubmitted: (_) => _submit(),
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
                       decoration: InputDecoration(
                         labelText: 'Password',
                         hintText: 'Enter your password',
                         prefixIcon: const Icon(Icons.lock_outline_rounded),
                         suffixIcon: IconButton(
+                          constraints: const BoxConstraints(
+                            minWidth: AppConstants.minTouchTarget,
+                            minHeight: AppConstants.minTouchTarget,
+                          ),
                           icon: Icon(
                             _obscurePassword
                                 ? Icons.visibility_off_outlined
@@ -241,31 +278,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     FilledButton(
                       onPressed: isLoading ? null : _submit,
                       style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(
-                          AppConstants.minTouchTarget,
-                        ),
+                        minimumSize: const Size.fromHeight(50),
                       ),
                       child: isLoading
                           ? const SizedBox(
                               height: 20,
                               width: 20,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2.5,
+                                strokeWidth: 2.2,
                                 color: Colors.white,
                               ),
                             )
                           : const Text('Sign In'),
                     ),
-                    const SizedBox(height: AppConstants.space24),
+                    const SizedBox(height: AppConstants.space20),
 
                     // Convenient Demo Credentials Fill
                     Center(
                       child: OutlinedButton.icon(
                         onPressed: isLoading ? null : _fillTestCredentials,
-                        icon: const Icon(Icons.key_rounded, size: 18),
+                        icon: const Icon(Icons.key_rounded, size: 16),
                         label: const Text('Fill Test Credentials (emilys)'),
                         style: OutlinedButton.styleFrom(
-                          minimumSize: const Size(200, 40),
+                          minimumSize: const Size(220, 44),
+                          backgroundColor: theme.colorScheme.surface,
+                          side: const BorderSide(color: AppColors.borderLight),
+                          foregroundColor: AppColors.primary,
                         ),
                       ),
                     ),

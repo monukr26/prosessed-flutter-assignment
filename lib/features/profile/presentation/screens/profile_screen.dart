@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
+
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/core/widgets/error_view.dart';
@@ -22,17 +22,13 @@ class ProfileScreen extends ConsumerWidget {
     final isWideScreen = screenWidth >= 768;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          tooltip: 'Back to Catalogue',
-          onPressed: () => context.pop(),
-        ),
-        title: const Text('My Profile'),
-      ),
+      backgroundColor: theme.scaffoldBackgroundColor,
+      appBar: AppBar(title: const Text('My Profile')),
       body: switch (state.status) {
         ProfileStatus.loading when state.user == null => const Center(
-          child: CircularProgressIndicator(),
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+          ),
         ),
         ProfileStatus.error when state.user == null => ErrorView(
           message: state.errorMessage ?? 'Failed to load user profile.',
@@ -56,7 +52,10 @@ class ProfileScreen extends ConsumerWidget {
               ),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(AppConstants.space16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppConstants.space20,
+                  vertical: AppConstants.space16,
+                ),
                 child: Column(
                   children: [
                     // Transient retry banner if background refresh failed
@@ -67,25 +66,28 @@ class ProfileScreen extends ConsumerWidget {
                           bottom: AppConstants.space16,
                         ),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer,
+                          color: const Color(0xFFFEE2E2),
                           borderRadius: BorderRadius.circular(
                             AppConstants.radius12,
                           ),
+                          border: Border.all(color: const Color(0xFFFCA5A5)),
                         ),
                         child: Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.warning_amber_rounded,
-                              color: theme.colorScheme.error,
+                              color: AppColors.error,
+                              size: 20,
                             ),
                             const SizedBox(width: AppConstants.space12),
                             Expanded(
                               child: Text(
                                 state.errorMessage ??
                                     'Could not refresh profile details.',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onErrorContainer,
+                                style: const TextStyle(
+                                  color: Color(0xFF991B1B),
                                   fontSize: 13,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
@@ -102,11 +104,11 @@ class ProfileScreen extends ConsumerWidget {
 
                     if (state.user != null) ...[
                       _buildProfileHeader(context, state.user!),
-                      const SizedBox(height: AppConstants.space24),
+                      const SizedBox(height: AppConstants.space28),
                       _buildInfoCard(context, state.user!),
                       const SizedBox(height: AppConstants.space32),
                       _buildLogoutButton(context, ref, state.isLoggingOut),
-                      const SizedBox(height: AppConstants.space24),
+                      const SizedBox(height: AppConstants.space32),
                     ],
                   ],
                 ),
@@ -128,45 +130,59 @@ class ProfileScreen extends ConsumerWidget {
 
     return Column(
       children: [
-        // User Avatar
+        // User Avatar with circular gradient border
         Container(
-          width: 104,
-          height: 104,
+          width: 96,
+          height: 96,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.primary, width: 3),
+            border: Border.all(color: AppColors.primary, width: 2.5),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary.withAlpha(30),
+                blurRadius: 14,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: ClipOval(
             child: user.image != null && user.image!.isNotEmpty
                 ? CachedNetworkImage(
                     imageUrl: user.image!,
                     fit: BoxFit.cover,
-                    placeholder: (context, url) => Center(
+                    placeholder: (context, url) => Container(
+                      color: AppColors.primary.withAlpha(20),
+                      alignment: Alignment.center,
                       child: Text(
                         initials,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 28,
                           color: AppColors.primary,
                         ),
                       ),
                     ),
-                    errorWidget: (context, url, error) => Center(
+                    errorWidget: (context, url, error) => Container(
+                      color: AppColors.primary.withAlpha(20),
+                      alignment: Alignment.center,
                       child: Text(
                         initials,
-                        style: theme.textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 28,
                           color: AppColors.primary,
                         ),
                       ),
                     ),
                   )
                 : Container(
-                    color: AppColors.primary.withAlpha(30),
+                    color: AppColors.primary.withAlpha(20),
                     alignment: Alignment.center,
                     child: Text(
                       initials,
-                      style: theme.textTheme.headlineMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: 28,
                         color: AppColors.primary,
                       ),
                     ),
@@ -178,28 +194,28 @@ class ProfileScreen extends ConsumerWidget {
         // Full Name
         Text(
           user.fullName.isNotEmpty ? user.fullName : user.username,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.3,
           ),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: AppConstants.space4),
+        const SizedBox(height: 6),
 
         // Username handle tag
         Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppConstants.space12,
-            vertical: AppConstants.space4,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
           decoration: BoxDecoration(
-            color: theme.colorScheme.secondaryContainer,
-            borderRadius: BorderRadius.circular(AppConstants.radius16),
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: theme.colorScheme.outline),
           ),
           child: Text(
             '@${user.username}',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSecondaryContainer,
+            style: TextStyle(
+              color: theme.colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
+              fontSize: 12,
             ),
           ),
         ),
@@ -210,78 +226,73 @@ class ProfileScreen extends ConsumerWidget {
   Widget _buildInfoCard(BuildContext context, User user) {
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.radius16),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
+        border: Border.all(color: theme.colorScheme.outline),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppConstants.space16,
-          vertical: AppConstants.space12,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(
-                left: AppConstants.space4,
-                top: AppConstants.space4,
-                bottom: AppConstants.space8,
-              ),
-              child: Text(
-                'Account Details',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppConstants.space16,
+        vertical: AppConstants.space16,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(
+              left: AppConstants.space4,
+              bottom: AppConstants.space12,
+            ),
+            child: Text(
+              'Personal Information',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
               ),
             ),
-            const Divider(),
+          ),
+          const Divider(),
 
-            // User ID
+          // User ID
+          _buildInfoTile(
+            context,
+            icon: Icons.badge_outlined,
+            label: 'User ID',
+            value: '#${user.id}',
+          ),
+          const Divider(),
+
+          // Email
+          _buildInfoTile(
+            context,
+            icon: Icons.email_outlined,
+            label: 'Email Address',
+            value: user.email.isNotEmpty ? user.email : 'Not provided',
+          ),
+          const Divider(),
+
+          // Phone number
+          _buildInfoTile(
+            context,
+            icon: Icons.phone_outlined,
+            label: 'Phone Number',
+            value: user.phone != null && user.phone!.isNotEmpty
+                ? user.phone!
+                : 'Not provided',
+          ),
+
+          // Gender (if available)
+          if (user.gender != null && user.gender!.isNotEmpty) ...[
+            const Divider(),
             _buildInfoTile(
               context,
-              icon: Icons.badge_outlined,
-              label: 'User ID',
-              value: '#${user.id}',
+              icon: Icons.person_outline_rounded,
+              label: 'Gender',
+              value: user.gender![0].toUpperCase() + user.gender!.substring(1),
             ),
-            const Divider(),
-
-            // Email
-            _buildInfoTile(
-              context,
-              icon: Icons.email_outlined,
-              label: 'Email',
-              value: user.email.isNotEmpty ? user.email : 'Not provided',
-            ),
-            const Divider(),
-
-            // Phone number
-            _buildInfoTile(
-              context,
-              icon: Icons.phone_outlined,
-              label: 'Phone',
-              value: user.phone != null && user.phone!.isNotEmpty
-                  ? user.phone!
-                  : 'Not provided',
-            ),
-
-            // Gender (if available)
-            if (user.gender != null && user.gender!.isNotEmpty) ...[
-              const Divider(),
-              _buildInfoTile(
-                context,
-                icon: Icons.person_outline_rounded,
-                label: 'Gender',
-                value:
-                    user.gender![0].toUpperCase() + user.gender!.substring(1),
-              ),
-            ],
           ],
-        ),
+        ],
       ),
     );
   }
@@ -299,12 +310,13 @@ class ProfileScreen extends ConsumerWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(AppConstants.space8),
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(AppConstants.radius8),
+              color: AppColors.primary.withAlpha(20),
+              borderRadius: BorderRadius.circular(AppConstants.radius10),
             ),
-            child: Icon(icon, size: 20, color: AppColors.primary),
+            child: Icon(icon, size: 18, color: AppColors.primary),
           ),
           const SizedBox(width: AppConstants.space16),
           Expanded(
@@ -315,12 +327,15 @@ class ProfileScreen extends ConsumerWidget {
                   label,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 11,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
                   value,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -336,7 +351,7 @@ class ProfileScreen extends ConsumerWidget {
     WidgetRef ref,
     bool isLoggingOut,
   ) {
-    return FilledButton.icon(
+    return OutlinedButton.icon(
       onPressed: isLoggingOut ? null : () => _confirmLogout(context, ref),
       icon: isLoggingOut
           ? const SizedBox(
@@ -344,15 +359,18 @@ class ProfileScreen extends ConsumerWidget {
               height: 18,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: Colors.white,
+                color: AppColors.error,
               ),
             )
-          : const Icon(Icons.logout_rounded),
-      label: Text(isLoggingOut ? 'Signing out...' : 'Sign Out'),
-      style: FilledButton.styleFrom(
-        backgroundColor: AppColors.error,
-        foregroundColor: Colors.white,
-        minimumSize: const Size.fromHeight(48),
+          : const Icon(Icons.logout_rounded, size: 18),
+      label: Text(
+        isLoggingOut ? 'Signing out...' : 'Sign Out of Account',
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.error,
+        side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.2),
+        minimumSize: const Size.fromHeight(50),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConstants.radius12),
         ),

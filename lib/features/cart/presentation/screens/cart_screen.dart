@@ -41,11 +41,6 @@ class CartScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
-          tooltip: 'Back to Catalogue',
-          onPressed: () => context.pop(),
-        ),
         title: Text(
           cartState.isNotEmpty
               ? 'Shopping Cart (${cartState.totalQuantity})'
@@ -68,11 +63,7 @@ class CartScreen extends ConsumerWidget {
               icon: Icons.remove_shopping_cart_outlined,
               action: FilledButton.icon(
                 onPressed: () {
-                  if (context.canPop()) {
-                    context.pop();
-                  } else {
-                    context.go(AppRoutes.home);
-                  }
+                  context.go(AppRoutes.home);
                 },
                 icon: const Icon(Icons.shopping_bag_outlined),
                 label: const Text('Start Shopping'),

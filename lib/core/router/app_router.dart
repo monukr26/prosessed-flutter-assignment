@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shopsphere/core/widgets/app_shell.dart';
 import 'package:shopsphere/features/auth/presentation/login_screen.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:shopsphere/features/auth/presentation/providers/auth_state.dart';
@@ -77,6 +78,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: routerNotifier,
     redirect: routerNotifier.redirect,
     routes: [
+      // ─── Unauthenticated routes (no shell / no bottom nav) ────────────────
       GoRoute(
         path: AppRoutes.splash,
         name: 'splash',
@@ -87,11 +89,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         name: 'login',
         builder: (context, state) => const LoginScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.home,
-        name: 'home',
-        builder: (context, state) => const ProductsScreen(),
-      ),
+
+      // ─── Full-screen child routes (no bottom nav) ─────────────────────────
       GoRoute(
         path: AppRoutes.productDetails,
         name: 'productDetails',
@@ -102,11 +101,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
-        path: AppRoutes.cart,
-        name: 'cart',
-        builder: (context, state) => const CartScreen(),
-      ),
-      GoRoute(
         path: AppRoutes.orderConfirmation,
         name: 'orderConfirmation',
         builder: (context, state) {
@@ -114,13 +108,31 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           if (order is CheckoutOrder) {
             return OrderConfirmationScreen(order: order);
           }
+          // Fallback: order not passed — go back to home
           return const ProductsScreen();
         },
       ),
-      GoRoute(
-        path: AppRoutes.profile,
-        name: 'profile',
-        builder: (context, state) => const ProfileScreen(),
+
+      // ─── Authenticated shell: Home, Cart, Profile with bottom nav ─────────
+      ShellRoute(
+        builder: (context, state, child) => AppShell(child: child),
+        routes: [
+          GoRoute(
+            path: AppRoutes.home,
+            name: 'home',
+            builder: (context, state) => const ProductsScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.cart,
+            name: 'cart',
+            builder: (context, state) => const CartScreen(),
+          ),
+          GoRoute(
+            path: AppRoutes.profile,
+            name: 'profile',
+            builder: (context, state) => const ProfileScreen(),
+          ),
+        ],
       ),
     ],
   );

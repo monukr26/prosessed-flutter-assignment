@@ -3,7 +3,7 @@ import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 import 'package:shopsphere/features/products/domain/entities/review.dart';
 
-/// List displaying customer reviews, ratings and comments.
+/// List displaying customer reviews, ratings and comments with clean card styling.
 class ProductReviewsList extends StatelessWidget {
   final List<Review> reviews;
 
@@ -19,13 +19,19 @@ class ProductReviewsList extends StatelessWidget {
     final theme = Theme.of(context);
 
     if (reviews.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: AppConstants.space16),
-        child: Text(
-          'No customer reviews yet for this product.',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-            fontStyle: FontStyle.italic,
+      return Container(
+        padding: const EdgeInsets.all(AppConstants.space24),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          borderRadius: BorderRadius.circular(AppConstants.radius14),
+          border: Border.all(color: theme.colorScheme.outline),
+        ),
+        child: Center(
+          child: Text(
+            'No customer reviews yet for this product.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
       );
@@ -39,87 +45,96 @@ class ProductReviewsList extends StatelessWidget {
       itemBuilder: (context, index) {
         final review = reviews[index];
 
-        return Card(
-          elevation: 0,
-          color: theme.colorScheme.surfaceContainerHighest.withAlpha(40),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(
-              color: theme.colorScheme.outlineVariant.withAlpha(60),
-            ),
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(AppConstants.radius14),
+            border: Border.all(color: theme.colorScheme.outline),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(AppConstants.space16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: AppColors.primary.withAlpha(30),
-                      child: Text(
-                        review.reviewerName.isNotEmpty
-                            ? review.reviewerName[0].toUpperCase()
-                            : 'C',
-                        style: const TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 13,
-                        ),
+          padding: const EdgeInsets.all(AppConstants.space16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 18,
+                    backgroundColor: AppColors.primary.withAlpha(25),
+                    child: Text(
+                      review.reviewerName.isNotEmpty
+                          ? review.reviewerName[0].toUpperCase()
+                          : 'C',
+                      style: const TextStyle(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 14,
                       ),
                     ),
-                    const SizedBox(width: AppConstants.space12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+                  ),
+                  const SizedBox(width: AppConstants.space12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          review.reviewerName,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.2,
+                          ),
+                        ),
+                        if (review.date != null)
                           Text(
-                            review.reviewerName,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
+                            _formatDate(review.date),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontSize: 11,
                             ),
                           ),
-                          if (review.date != null)
-                            Text(
-                              _formatDate(review.date),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                                fontSize: 11,
-                              ),
-                            ),
-                        ],
-                      ),
+                      ],
                     ),
-                    // Star rating pill
-                    Row(
+                  ),
+                  // Star rating pill
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFEF3C7),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const Icon(
                           Icons.star_rounded,
-                          size: 16,
-                          color: AppColors.rating,
+                          size: 14,
+                          color: Color(0xFFD97706),
                         ),
                         const SizedBox(width: 3),
                         Text(
                           review.rating.toStringAsFixed(1),
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          style: const TextStyle(
+                            color: Color(0xFF92400E),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
                           ),
                         ),
                       ],
                     ),
-                  ],
-                ),
-                const SizedBox(height: AppConstants.space8),
-                Text(
-                  review.comment,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurface,
                   ),
+                ],
+              ),
+              const SizedBox(height: AppConstants.space12),
+              Text(
+                review.comment,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  height: 1.4,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         );
       },

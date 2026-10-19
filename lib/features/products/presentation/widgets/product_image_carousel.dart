@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shopsphere/core/theme/app_colors.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 
-/// Interactive image carousel with page indicators and image cache support.
+/// Interactive image carousel with smooth page indicators and image cache support.
 class ProductImageCarousel extends StatefulWidget {
   final List<String> images;
   final String fallbackThumbnail;
@@ -46,64 +46,107 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final images = _displayImages;
+    final isDark = theme.brightness == Brightness.dark;
 
     if (images.isEmpty) {
       return Container(
         height: 320,
-        color: theme.colorScheme.surfaceContainerHighest.withAlpha(50),
-        child: const Center(
-          child: Icon(Icons.image_not_supported_outlined, size: 48),
+        decoration: BoxDecoration(
+          color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF9FAFB),
+          borderRadius: BorderRadius.circular(AppConstants.radius16),
+        ),
+        child: Center(
+          child: Icon(
+            Icons.image_not_supported_outlined,
+            size: 48,
+            color: theme.colorScheme.onSurfaceVariant.withAlpha(100),
+          ),
         ),
       );
     }
 
     return Column(
       children: [
-        SizedBox(
+        Container(
           height: 340,
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: images.length,
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              final imageUrl = images[index];
-              return CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-                placeholder: (context, url) => Container(
-                  color: theme.colorScheme.surfaceContainerHighest.withAlpha(
-                    40,
-                  ),
-                  child: const Center(
-                    child: SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: CircularProgressIndicator(strokeWidth: 2.5),
+          clipBehavior: Clip.antiAlias,
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF1E293B) : const Color(0xFFF9FAFB),
+            borderRadius: BorderRadius.circular(AppConstants.radius16),
+            border: Border.all(color: theme.colorScheme.outline),
+          ),
+          child: Stack(
+            children: [
+              PageView.builder(
+                controller: _pageController,
+                itemCount: images.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  final imageUrl = images[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(AppConstants.space16),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.contain,
+                      placeholder: (context, url) => const Center(
+                        child: SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: Icon(
+                          Icons.broken_image_outlined,
+                          size: 48,
+                          color: theme.colorScheme.onSurfaceVariant.withAlpha(
+                            100,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+
+              // Page counter pill overlay (e.g. 1/4)
+              if (images.length > 1)
+                Positioned(
+                  bottom: AppConstants.space12,
+                  right: AppConstants.space12,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withAlpha(140),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      '${_currentIndex + 1}/${images.length}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
                 ),
-                errorWidget: (context, url, error) => Container(
-                  color: theme.colorScheme.surfaceContainerHighest.withAlpha(
-                    40,
-                  ),
-                  child: const Center(
-                    child: Icon(
-                      Icons.broken_image_outlined,
-                      size: 48,
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              );
-            },
+            ],
           ),
         ),
 
-        // Dots page indicator
+        // Dots page indicator below
         if (images.length > 1) ...[
           const SizedBox(height: AppConstants.space12),
           Row(
@@ -111,15 +154,15 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
             children: List.generate(images.length, (index) {
               final isSelected = _currentIndex == index;
               return AnimatedContainer(
-                duration: const Duration(milliseconds: 250),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: isSelected ? 20 : 7,
-                height: 7,
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: isSelected ? 22 : 6,
+                height: 6,
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary
-                      : theme.colorScheme.onSurfaceVariant.withAlpha(70),
-                  borderRadius: BorderRadius.circular(4),
+                      : theme.colorScheme.onSurfaceVariant.withAlpha(60),
+                  borderRadius: BorderRadius.circular(3),
                 ),
               );
             }),

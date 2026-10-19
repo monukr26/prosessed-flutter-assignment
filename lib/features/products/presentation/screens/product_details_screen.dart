@@ -30,6 +30,7 @@ class ProductDetailsScreen extends ConsumerWidget {
     final isWideScreen = screenWidth >= 768;
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
@@ -41,7 +42,10 @@ class ProductDetailsScreen extends ConsumerWidget {
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        actions: const [CartBadgeIcon()],
+        actions: const [
+          CartBadgeIcon(),
+          SizedBox(width: AppConstants.space8),
+        ],
       ),
       body: switch (state.status) {
         ProductDetailsStatus.initial ||
@@ -80,13 +84,18 @@ class ProductDetailsScreen extends ConsumerWidget {
             ],
           ),
         ),
-        ProductDetailsStatus.success => _buildContent(
-          context,
-          ref,
-          state,
-          state.product!,
-          isWideScreen,
-          theme,
+        ProductDetailsStatus.success => Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 1200),
+            child: _buildContent(
+              context,
+              ref,
+              state,
+              state.product!,
+              isWideScreen,
+              theme,
+            ),
+          ),
         ),
       },
       bottomNavigationBar: state.isSuccess
@@ -111,34 +120,61 @@ class ProductDetailsScreen extends ConsumerWidget {
     final details = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Brand tag (if available)
-        if (product.brand != null && product.brand!.isNotEmpty) ...[
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withAlpha(20),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: Text(
-              product.brand!,
-              style: TextStyle(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-                fontSize: 12,
+        // Brand / Category Tag
+        Row(
+          children: [
+            if (product.brand != null && product.brand!.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withAlpha(20),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  product.brand!,
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: theme.colorScheme.outline),
+              ),
+              child: Text(
+                product.category.toUpperCase(),
+                style: TextStyle(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 11,
+                  letterSpacing: 0.3,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: AppConstants.space8),
-        ],
+          ],
+        ),
+        const SizedBox(height: AppConstants.space12),
 
-        // Title
+        // Product Title
         Text(
           product.title,
           style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
+            letterSpacing: -0.4,
+            height: 1.25,
+            color: theme.colorScheme.onSurface,
           ),
         ),
-        const SizedBox(height: AppConstants.space8),
+        const SizedBox(height: AppConstants.space12),
 
         // Rating & Review count badge
         Row(
@@ -146,8 +182,8 @@ class ProductDetailsScreen extends ConsumerWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.rating.withAlpha(30),
-                borderRadius: BorderRadius.circular(6),
+                color: const Color(0xFFFEF3C7),
+                borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -155,24 +191,26 @@ class ProductDetailsScreen extends ConsumerWidget {
                   const Icon(
                     Icons.star_rounded,
                     size: 16,
-                    color: AppColors.rating,
+                    color: Color(0xFFD97706),
                   ),
                   const SizedBox(width: 4),
                   Text(
                     product.rating.toStringAsFixed(1),
                     style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF92400E),
+                      fontWeight: FontWeight.w700,
                       fontSize: 13,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(width: AppConstants.space8),
+            const SizedBox(width: AppConstants.space12),
             Text(
-              '(${product.reviews.length} customer reviews)',
+              '${product.reviews.length} customer reviews',
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],
@@ -186,33 +224,36 @@ class ProductDetailsScreen extends ConsumerWidget {
           children: [
             Text(
               '\$${product.discountedPrice.toStringAsFixed(2)}',
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                fontSize: 26,
+                fontWeight: FontWeight.w800,
                 color: theme.colorScheme.primary,
+                letterSpacing: -0.5,
               ),
             ),
             if (product.discountPercentage > 0) ...[
               const SizedBox(width: AppConstants.space12),
               Text(
                 '\$${product.price.toStringAsFixed(2)}',
-                style: theme.textTheme.titleMedium?.copyWith(
+                style: TextStyle(
+                  fontSize: 16,
                   decoration: TextDecoration.lineThrough,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(width: AppConstants.space8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.discount,
+                  color: AppColors.success,
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: Text(
                   '-${product.discountPercentage.toStringAsFixed(0)}% OFF',
                   style: const TextStyle(
                     color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 11,
                   ),
                 ),
               ),
@@ -223,33 +264,35 @@ class ProductDetailsScreen extends ConsumerWidget {
 
         // Stock status
         _buildStockStatus(product, theme),
-        const SizedBox(height: AppConstants.space20),
+        const SizedBox(height: AppConstants.space24),
 
         // Description Section
         Text(
-          'Description',
+          'About this product',
           style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.2,
           ),
         ),
         const SizedBox(height: AppConstants.space8),
         Text(
           product.description,
           style: theme.textTheme.bodyMedium?.copyWith(
-            height: 1.5,
+            height: 1.6,
             color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-        const SizedBox(height: AppConstants.space24),
+        const SizedBox(height: AppConstants.space28),
 
-        // Customer Reviews Section
+        // Customer Reviews Header & List
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               'Customer Reviews',
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
               ),
             ),
             Text(
@@ -286,7 +329,7 @@ class ProductDetailsScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           carousel,
-          const SizedBox(height: AppConstants.space16),
+          const SizedBox(height: AppConstants.space20),
           details,
         ],
       ),
@@ -298,22 +341,18 @@ class ProductDetailsScreen extends ConsumerWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer.withAlpha(80),
+          color: const Color(0xFFFEE2E2),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Row(
+        child: const Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.cancel_outlined,
-              size: 16,
-              color: theme.colorScheme.error,
-            ),
-            const SizedBox(width: 6),
+            Icon(Icons.cancel_rounded, size: 16, color: AppColors.error),
+            SizedBox(width: 6),
             Text(
               'Out of Stock',
               style: TextStyle(
-                color: theme.colorScheme.error,
+                color: Color(0xFF991B1B),
                 fontWeight: FontWeight.w600,
                 fontSize: 13,
               ),
@@ -323,26 +362,32 @@ class ProductDetailsScreen extends ConsumerWidget {
       );
     }
 
-    final isLowStock = product.stock < 5;
-    final color = isLowStock ? AppColors.secondary : AppColors.success;
+    final isLowStock = product.stock <= 5;
+    final bgColor = isLowStock
+        ? const Color(0xFFFEF3C7)
+        : const Color(0xFFDCFCE7);
+    final fgColor = isLowStock
+        ? const Color(0xFF92400E)
+        : const Color(0xFF166534);
+    final iconColor = isLowStock ? const Color(0xFFD97706) : AppColors.success;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withAlpha(25),
+        color: bgColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check_circle_outline_rounded, size: 16, color: color),
+          Icon(Icons.check_circle_rounded, size: 16, color: iconColor),
           const SizedBox(width: 6),
           Text(
             isLowStock
-                ? 'Only ${product.stock} left in stock'
+                ? 'Only ${product.stock} left in stock - order soon'
                 : 'In Stock (${product.stock} available)',
             style: TextStyle(
-              color: color,
+              color: fgColor,
               fontWeight: FontWeight.w600,
               fontSize: 13,
             ),
@@ -371,18 +416,14 @@ class ProductDetailsScreen extends ConsumerWidget {
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withAlpha(20),
-            offset: const Offset(0, -3),
-            blurRadius: 8,
-          ),
-        ],
+        border: Border(
+          top: BorderSide(color: theme.colorScheme.outline, width: 1),
+        ),
       ),
       child: SafeArea(
         child: Row(
           children: [
-            // Quantity Selector
+            // Accessible Quantity Selector
             ProductQuantitySelector(
               quantity: state.quantity,
               maxStock: product.stock,
@@ -391,7 +432,7 @@ class ProductDetailsScreen extends ConsumerWidget {
             ),
             const SizedBox(width: AppConstants.space12),
 
-            // Add to Cart Button
+            // Primary Add to Cart CTA
             Expanded(
               child: FilledButton.icon(
                 onPressed: state.isOutOfStock
@@ -416,7 +457,7 @@ class ProductDetailsScreen extends ConsumerWidget {
                           );
                         }
                       },
-                icon: const Icon(Icons.add_shopping_cart_rounded),
+                icon: const Icon(Icons.add_shopping_cart_rounded, size: 20),
                 label: Text(
                   state.isOutOfStock
                       ? 'Out of Stock'

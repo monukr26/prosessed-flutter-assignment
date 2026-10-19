@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shopsphere/core/utils/constants.dart';
 
-/// Reusable EmptyView widget with icon, message and optional action button.
+/// Reusable EmptyView widget with soft circular icon, message and optional action button.
 class EmptyView extends StatelessWidget {
   final String title;
   final String message;
@@ -27,29 +27,45 @@ class EmptyView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              icon,
-              size: 64,
-              color: theme.colorScheme.onSurfaceVariant.withAlpha(128),
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: theme.colorScheme.outline),
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: 38,
+                  color: theme.colorScheme.onSurfaceVariant.withAlpha(160),
+                ),
+              ),
             ),
-            const SizedBox(height: AppConstants.space16),
+            const SizedBox(height: AppConstants.space20),
             Text(
               title,
               style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.2,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppConstants.space8),
-            Text(
-              message,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Text(
+                message,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
             if (action != null) ...[
-              const SizedBox(height: AppConstants.space20),
+              const SizedBox(height: AppConstants.space24),
               action!,
             ],
           ],
