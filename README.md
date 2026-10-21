@@ -1,4 +1,4 @@
-# ShopSphere 🛍️
+# ShopSphere
 
 A production-grade, responsive e-commerce catalogue application built with **Flutter** and **Feature-First Clean Architecture**, integrating seamlessly with the [DummyJSON](https://dummyjson.com/) REST API. Developed for the **Prosessed Flutter Developer Intern** assignment (Submitted: 21 October 2026).
 
