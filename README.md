@@ -10,11 +10,13 @@ A production-grade, responsive e-commerce catalogue application built with **Flu
 
 | Mobile Catalogue (Phone) | Product Details (Phone) | Shopping Cart (Phone) | Order Confirmation (Phone) |
 | :---: | :---: | :---: | :---: |
-| ![Catalogue](screenshots/phone_catalogue.png) | ![Product Details](screenshots/phone_product_details.png) | ![Cart Screen](screenshots/phone_cart.png) | ![Order Confirmation](screenshots/phone_order_confirmation.png) |
+| ![Catalogue]<img width="720" height="1600" alt="WhatsApp Image 2026-10-21 at 5 22 30 PM" src="https://github.com/user-attachments/assets/112c8147-f49b-40f5-a472-2393b0d61bc2" />
+ | ![Product Details]<img width="720" height="1600" alt="2  WhatsApp Image 2026-10-21 at 5 22 30 PM" src="https://github.com/user-attachments/assets/581ffe69-9c6d-4445-a085-fef9b75a3257" />
+ | ![Cart Screen]<img width="720" height="1600" alt="3  WhatsApp Image 2026-10-21 at 5 22 31 PM" src="https://github.com/user-attachments/assets/8ba3263b-6f81-47aa-af1a-6b821d0d9f53" />
+ | ![Order Confirmation]<img width="720" height="1600" alt="4  WhatsApp Image 2026-10-21 at 5 22 31 PM" src="https://github.com/user-attachments/assets/c205475a-3bb9-4829-852e-b95a8ec17616" />
+ |
 
-| Tablet / Landscape Master-Detail Catalogue | Tablet / Landscape Product Details |
-| :---: | :---: |
-| ![Tablet Catalogue](screenshots/tablet_catalogue.png) | ![Tablet Details](screenshots/tablet_details.png) |
+
 
 *If capturing new device screenshots prior to final submission:*
 1. **Phone - Catalogue**: 2-column grid with category chips and search bar.
