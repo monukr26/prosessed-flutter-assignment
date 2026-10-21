@@ -21,8 +21,8 @@ class ProductModel extends Product {
   factory ProductModel.fromJson(Map<String, dynamic> json) {
     final rawReviews = json['reviews'] as List<dynamic>? ?? const [];
     final reviews = rawReviews
-        .whereType<Map<String, dynamic>>()
-        .map(ReviewModel.fromJson)
+        .whereType<Map>()
+        .map((item) => ReviewModel.fromJson(Map<String, dynamic>.from(item)))
         .toList();
 
     return ProductModel(
@@ -39,7 +39,8 @@ class ProductModel extends Product {
       thumbnail: json['thumbnail'] as String? ?? '',
       images:
           (json['images'] as List<dynamic>?)
-              ?.map((e) => e.toString())
+              ?.map((e) => e?.toString() ?? '')
+              .where((url) => url.trim().isNotEmpty)
               .toList() ??
           const [],
       reviews: reviews,

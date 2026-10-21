@@ -23,6 +23,7 @@ class ProductQuantitySelector extends StatelessWidget {
     final canIncrement = quantity < maxStock;
 
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.radius12),

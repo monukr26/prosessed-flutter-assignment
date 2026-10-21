@@ -17,14 +17,16 @@ class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.child});
 
   /// Maps a router location to a bottom-nav index.
-  static int _locationToIndex(String location) {
+  @visibleForTesting
+  static int locationToIndex(String location) {
     if (location.startsWith(AppRoutes.cart)) return 1;
     if (location.startsWith(AppRoutes.profile)) return 2;
     return 0; // Home / product details
   }
 
   /// Maps a bottom-nav index tap to the correct GoRouter path.
-  static void _onTabTapped(BuildContext context, int index) {
+  @visibleForTesting
+  static void onTabTapped(BuildContext context, int index) {
     switch (index) {
       case 0:
         context.go(AppRoutes.home);
@@ -38,7 +40,7 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final location = GoRouterState.of(context).matchedLocation;
-    final selectedIndex = _locationToIndex(location);
+    final selectedIndex = locationToIndex(location);
     final totalQuantity = ref.watch(
       cartNotifierProvider.select((s) => s.totalQuantity),
     );
@@ -54,7 +56,7 @@ class AppShell extends ConsumerWidget {
             NavigationRail(
               backgroundColor: Colors.white,
               selectedIndex: selectedIndex,
-              onDestinationSelected: (i) => _onTabTapped(context, i),
+              onDestinationSelected: (i) => onTabTapped(context, i),
               labelType: NavigationRailLabelType.all,
               selectedIconTheme: const IconThemeData(
                 color: AppColors.primary,
@@ -130,7 +132,7 @@ class AppShell extends ConsumerWidget {
       bottomNavigationBar: _ShopSphereBottomNav(
         selectedIndex: selectedIndex,
         totalQuantity: totalQuantity,
-        onTap: (i) => _onTabTapped(context, i),
+        onTap: (i) => onTabTapped(context, i),
       ),
     );
   }
@@ -167,13 +169,16 @@ class _ShopSphereBottomNav extends StatelessWidget {
         ? const Color(0xFF94A3B8)
         : const Color(0xFF9CA3AF);
 
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final navHeight = (60.0 * textScale).clamp(60.0, 76.0);
+
     return Container(
       decoration: BoxDecoration(
         color: navSurface,
         border: Border(top: BorderSide(color: topBorderColor, width: 1)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(isDark ? 20 : 10),
+            color: Colors.black.withValues(alpha: isDark ? 0.08 : 0.04),
             blurRadius: 8,
             offset: const Offset(0, -2),
           ),
@@ -182,7 +187,7 @@ class _ShopSphereBottomNav extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 60,
+          height: navHeight,
           child: Row(
             children: [
               _NavItem(
@@ -254,8 +259,8 @@ class _NavItem extends StatelessWidget {
         button: true,
         child: InkWell(
           onTap: () => onTap(index),
-          splashColor: AppColors.primary.withAlpha(15),
-          highlightColor: AppColors.primary.withAlpha(8),
+          splashColor: AppColors.primary.withValues(alpha: 0.06),
+          highlightColor: AppColors.primary.withValues(alpha: 0.03),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

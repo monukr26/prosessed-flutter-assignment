@@ -39,7 +39,9 @@ class EmptyView extends StatelessWidget {
                 child: Icon(
                   icon,
                   size: 38,
-                  color: theme.colorScheme.onSurfaceVariant.withAlpha(160),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.63,
+                  ),
                 ),
               ),
             ),

@@ -45,6 +45,7 @@ class CartNotifier extends Notifier<CartState> {
     if (state.items.isNotEmpty) return;
     state = state.copyWith(status: CartStatus.loading);
     final result = await _getCartUseCase();
+    if (!ref.mounted) return;
 
     result.when(
       success: (items) {

@@ -28,6 +28,13 @@ class CartSummaryCard extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(AppConstants.radius16),
         border: Border.all(color: theme.colorScheme.outline, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.20 : 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -151,15 +158,18 @@ class CartSummaryCard extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
-            color: isBold
-                ? theme.colorScheme.onSurface
-                : theme.colorScheme.onSurfaceVariant,
+        Expanded(
+          child: Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: isBold ? FontWeight.w700 : FontWeight.w500,
+              color: isBold
+                  ? theme.colorScheme.onSurface
+                  : theme.colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
+        const SizedBox(width: AppConstants.space8),
         Text(
           value,
           style: theme.textTheme.bodyMedium?.copyWith(

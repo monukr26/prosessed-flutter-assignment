@@ -28,8 +28,8 @@ class ProductCard extends StatelessWidget {
       ),
       child: InkWell(
         onTap: onTap,
-        splashColor: AppColors.primary.withAlpha(20),
-        highlightColor: AppColors.primary.withAlpha(10),
+        splashColor: AppColors.primary.withValues(alpha: 0.08),
+        highlightColor: AppColors.primary.withValues(alpha: 0.04),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -46,23 +46,16 @@ class ProductCard extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: product.thumbnail,
                       fit: BoxFit.contain,
-                      placeholder: (context, url) => const Center(
-                        child: SizedBox(
-                          width: 22,
-                          height: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.primary,
-                            ),
-                          ),
-                        ),
+                      placeholder: (context, url) => Container(
+                        color: theme.brightness == Brightness.light
+                            ? const Color(0xFFEEEEEE)
+                            : const Color(0xFF2A3447),
                       ),
                       errorWidget: (context, url, error) => Center(
                         child: Icon(
                           Icons.image_not_supported_outlined,
-                          color: theme.colorScheme.onSurfaceVariant.withAlpha(
-                            100,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.39,
                           ),
                           size: 32,
                         ),
@@ -75,29 +68,24 @@ class ProductCard extends StatelessWidget {
                     Positioned(
                       top: AppConstants.space8,
                       left: AppConstants.space8,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 7,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.discountBadge,
-                          borderRadius: BorderRadius.circular(6),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.discountBadge.withAlpha(50),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
+                      child: ExcludeSemantics(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.discountBadge,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            '-${product.discountPercentage.toStringAsFixed(0)}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.2,
                             ),
-                          ],
-                        ),
-                        child: Text(
-                          '-${product.discountPercentage.toStringAsFixed(0)}%',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: -0.2,
                           ),
                         ),
                       ),
@@ -107,33 +95,39 @@ class ProductCard extends StatelessWidget {
                   Positioned(
                     top: AppConstants.space8,
                     right: AppConstants.space8,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 7,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.black.withAlpha(150),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Icon(
-                            Icons.star_rounded,
-                            size: 13,
-                            color: AppColors.rating,
+                    child: Semantics(
+                      label:
+                          'Rating ${product.rating.toStringAsFixed(1)} out of 5',
+                      child: ExcludeSemantics(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 7,
+                            vertical: 3,
                           ),
-                          const SizedBox(width: 3),
-                          Text(
-                            product.rating.toStringAsFixed(1),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                            ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.58),
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                        ],
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                size: 13,
+                                color: AppColors.rating,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                product.rating.toStringAsFixed(1),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),

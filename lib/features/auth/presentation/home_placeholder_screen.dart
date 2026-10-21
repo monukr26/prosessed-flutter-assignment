@@ -41,7 +41,9 @@ class HomePlaceholderScreen extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 36,
-                      backgroundColor: AppColors.primary.withAlpha(25),
+                      backgroundColor: AppColors.primary.withValues(
+                        alpha: 0.10,
+                      ),
                       backgroundImage:
                           user?.image != null && user!.image!.isNotEmpty
                           ? NetworkImage(user.image!)
@@ -80,10 +82,10 @@ class HomePlaceholderScreen extends ConsumerWidget {
                         vertical: AppConstants.space4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.success.withAlpha(30),
+                        color: AppColors.success.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: AppColors.success.withAlpha(80),
+                          color: AppColors.success.withValues(alpha: 0.31),
                         ),
                       ),
                       child: const Row(

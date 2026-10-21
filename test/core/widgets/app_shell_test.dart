@@ -46,7 +46,7 @@ GoRouter _buildTestRouter({String initialLocation = AppRoutes.home}) {
           GoRoute(
             path: AppRoutes.home,
             name: 'home',
-            builder: (_, __) => const Scaffold(
+            builder: (_, _) => const Scaffold(
               key: Key('home_screen'),
               body: Center(child: Text('Home')),
             ),
@@ -54,7 +54,7 @@ GoRouter _buildTestRouter({String initialLocation = AppRoutes.home}) {
           GoRoute(
             path: AppRoutes.cart,
             name: 'cart',
-            builder: (_, __) => const Scaffold(
+            builder: (_, _) => const Scaffold(
               key: Key('cart_screen'),
               body: Center(child: Text('Cart')),
             ),
@@ -62,7 +62,7 @@ GoRouter _buildTestRouter({String initialLocation = AppRoutes.home}) {
           GoRoute(
             path: AppRoutes.profile,
             name: 'profile',
-            builder: (_, __) => const Scaffold(
+            builder: (_, _) => const Scaffold(
               key: Key('profile_screen'),
               body: Center(child: Text('Profile')),
             ),
@@ -116,25 +116,25 @@ void main() {
 
   // ─── Unit tests for _locationToIndex ────────────────────────────────────
 
-  group('AppShell._locationToIndex', () {
+  group('AppShell.locationToIndex', () {
     test('returns 0 (Home) for /home', () {
-      expect(AppShell._locationToIndex(AppRoutes.home), 0);
+      expect(AppShell.locationToIndex(AppRoutes.home), 0);
     });
 
     test('returns 1 (Cart) for /cart', () {
-      expect(AppShell._locationToIndex(AppRoutes.cart), 1);
+      expect(AppShell.locationToIndex(AppRoutes.cart), 1);
     });
 
     test('returns 2 (Profile) for /profile', () {
-      expect(AppShell._locationToIndex(AppRoutes.profile), 2);
+      expect(AppShell.locationToIndex(AppRoutes.profile), 2);
     });
 
     test('returns 0 (Home) for product details path', () {
-      expect(AppShell._locationToIndex('/products/5'), 0);
+      expect(AppShell.locationToIndex('/products/5'), 0);
     });
 
     test('returns 0 (Home) for unknown path', () {
-      expect(AppShell._locationToIndex('/unknown'), 0);
+      expect(AppShell.locationToIndex('/unknown'), 0);
     });
   });
 
@@ -147,7 +147,7 @@ void main() {
         mockSave: mockSave,
         mockClear: mockClear,
       );
-      await Future.microtask(() {}); // let microtask loadCart settle
+      await Future<void>.delayed(Duration.zero); // let loadCart complete
       expect(container.read(cartNotifierProvider).totalQuantity, 0);
     });
 
@@ -231,7 +231,7 @@ void main() {
       await tester.pumpWidget(buildTestApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('Home'), findsOneWidget);
+      expect(find.byKey(const Key('home_screen')), findsOneWidget);
       expect(find.text('Cart'), findsOneWidget); // nav label
       expect(find.text('Profile'), findsOneWidget); // nav label
     });

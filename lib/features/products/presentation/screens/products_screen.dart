@@ -52,6 +52,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
   }
 
   void _onSearchChanged(String query) {
+    setState(() {}); // Rebuild so suffixIcon clear button appears reactively
     _debounceTimer?.cancel();
     _debounceTimer = Timer(AppConstants.searchDebounce, () {
       ref.read(productCatalogNotifierProvider.notifier).setSearchQuery(query);
@@ -61,6 +62,7 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
   void _clearSearch() {
     _searchController.clear();
     _debounceTimer?.cancel();
+    setState(() {}); // Clear the suffix icon immediately
     ref.read(productCatalogNotifierProvider.notifier).setSearchQuery('');
   }
 
@@ -122,19 +124,16 @@ class _ProductsScreenState extends ConsumerState<ProductsScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              padding: const EdgeInsets.all(6),
+              width: 28,
+              height: 28,
               decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [AppColors.primaryLight, AppColors.primaryDark],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.primary,
+                borderRadius: BorderRadius.circular(7),
               ),
               child: const Icon(
                 Icons.shopping_bag_rounded,
                 color: Colors.white,
-                size: 18,
+                size: 16,
               ),
             ),
             const SizedBox(width: AppConstants.space8),

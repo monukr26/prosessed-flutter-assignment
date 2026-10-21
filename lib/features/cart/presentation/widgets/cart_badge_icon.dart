@@ -8,7 +8,9 @@ import 'package:shopsphere/features/cart/presentation/providers/cart_notifier.da
 
 /// App bar action widget showing a shopping cart icon with a reactive live badge.
 class CartBadgeIcon extends ConsumerWidget {
-  const CartBadgeIcon({super.key});
+  final VoidCallback? onTap;
+
+  const CartBadgeIcon({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,7 +34,7 @@ class CartBadgeIcon extends ConsumerWidget {
         textColor: Colors.white,
         child: const Icon(Icons.shopping_bag_outlined, size: 22),
       ),
-      onPressed: () => context.push(AppRoutes.cart),
+      onPressed: onTap ?? () => context.go(AppRoutes.cart),
     );
   }
 }

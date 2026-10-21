@@ -72,7 +72,7 @@ class SortFilterSheet extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(vertical: 2),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withAlpha(15)
+                      ? AppColors.primary.withValues(alpha: 0.08)
                       : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppConstants.radius12),
                 ),

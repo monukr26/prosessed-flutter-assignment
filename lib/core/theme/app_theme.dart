@@ -10,7 +10,7 @@ class AppTheme {
       brightness: Brightness.light,
       primary: AppColors.primary,
       onPrimary: Colors.white,
-      primaryContainer: AppColors.primary.withAlpha(25),
+      primaryContainer: AppColors.primary.withValues(alpha: 0.10),
       onPrimaryContainer: AppColors.primaryDark,
       secondary: AppColors.secondary,
       onSecondary: Colors.white,

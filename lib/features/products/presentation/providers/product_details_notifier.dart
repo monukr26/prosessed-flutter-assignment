@@ -26,36 +26,52 @@ class ProductDetailsNotifier extends Notifier<ProductDetailsState> {
   Future<void> loadProduct([int? id]) async {
     final targetId = id ?? productId;
 
+    if (targetId <= 0) {
+      state = state.copyWith(
+        status: ProductDetailsStatus.notFound,
+        errorMessage: 'Invalid product ID.',
+      );
+      return;
+    }
+
     state = state.copyWith(
       status: ProductDetailsStatus.loading,
       errorMessage: null,
     );
 
-    final result = await _useCase(targetId);
+    try {
+      final result = await _useCase(targetId);
+      if (!ref.mounted) return;
 
-    result.when(
-      success: (product) {
-        state = state.copyWith(
-          status: ProductDetailsStatus.success,
-          product: product,
-          quantity: product.isInStock ? 1 : 0,
-        );
-      },
-      failure: (failure) {
-        if (failure is NotFoundFailure || failure.statusCode == 404) {
+      result.when(
+        success: (product) {
           state = state.copyWith(
-            status: ProductDetailsStatus.notFound,
-            errorMessage:
-                'Product not found. The item you are looking for may have been removed or does not exist.',
+            status: ProductDetailsStatus.success,
+            product: product,
+            quantity: product.isInStock ? 1 : 0,
           );
-        } else {
-          state = state.copyWith(
-            status: ProductDetailsStatus.error,
-            errorMessage: failure.message,
-          );
-        }
-      },
-    );
+        },
+        failure: (failure) {
+          if (failure is NotFoundFailure || failure.statusCode == 404) {
+            state = state.copyWith(
+              status: ProductDetailsStatus.notFound,
+              errorMessage:
+                  'Product not found. The item you are looking for may have been removed or does not exist.',
+            );
+          } else {
+            state = state.copyWith(
+              status: ProductDetailsStatus.error,
+              errorMessage: failure.message,
+            );
+          }
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(
+        status: ProductDetailsStatus.error,
+        errorMessage: 'Failed to load product details: $e',
+      );
+    }
   }
 
   /// Increments quantity respecting available stock.

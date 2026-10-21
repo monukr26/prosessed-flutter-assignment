@@ -16,8 +16,11 @@ class CategoryChipsBar extends ConsumerWidget {
     final catalogState = ref.watch(productCatalogNotifierProvider);
     final selectedCategory = catalogState.selectedCategory;
 
+    final textScale = MediaQuery.textScalerOf(context).scale(1.0);
+    final barHeight = (44.0 * textScale).clamp(44.0, 58.0);
+
     return SizedBox(
-      height: 44,
+      height: barHeight,
       child: categoriesAsync.when(
         loading: () => const Center(
           child: SizedBox(

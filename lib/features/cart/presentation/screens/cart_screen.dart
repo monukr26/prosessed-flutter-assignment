@@ -41,6 +41,19 @@ class CartScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded),
+          tooltip: 'Back',
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              try {
+                context.go(AppRoutes.home);
+              } catch (_) {}
+            }
+          },
+        ),
         title: Text(
           cartState.isNotEmpty
               ? 'Shopping Cart (${cartState.totalQuantity})'
@@ -97,6 +110,7 @@ class CartScreen extends ConsumerWidget {
               onDecrement: () =>
                   cartNotifier.decrementQuantity(item.product.id),
               onRemove: () => cartNotifier.removeItem(item.product.id),
+              onTap: () => context.push('/products/${item.product.id}'),
             );
           }, childCount: cartState.items.length),
         ),
@@ -143,6 +157,7 @@ class CartScreen extends ConsumerWidget {
                     onDecrement: () =>
                         cartNotifier.decrementQuantity(item.product.id),
                     onRemove: () => cartNotifier.removeItem(item.product.id),
+                    onTap: () => context.push('/products/${item.product.id}'),
                   );
                 },
               ),

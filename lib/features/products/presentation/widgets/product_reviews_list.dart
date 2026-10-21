@@ -59,7 +59,7 @@ class ProductReviewsList extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 18,
-                    backgroundColor: AppColors.primary.withAlpha(25),
+                    backgroundColor: AppColors.primary.withValues(alpha: 0.10),
                     child: Text(
                       review.reviewerName.isNotEmpty
                           ? review.reviewerName[0].toUpperCase()

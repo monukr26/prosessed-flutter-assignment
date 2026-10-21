@@ -29,22 +29,41 @@ class ProductDetailsScreen extends ConsumerWidget {
     final screenWidth = MediaQuery.sizeOf(context).width;
     final isWideScreen = screenWidth >= 768;
 
+    void handleBack() {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      } else {
+        try {
+          context.go(AppRoutes.home);
+        } catch (_) {}
+      }
+    }
+
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded),
           tooltip: 'Back to Catalogue',
-          onPressed: () => context.pop(),
+          onPressed: handleBack,
         ),
         title: Text(
           state.product?.title ?? 'Product Details',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        actions: const [
-          CartBadgeIcon(),
-          SizedBox(width: AppConstants.space8),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: 'Refresh details',
+            onPressed: () {
+              ref
+                  .read(productDetailsNotifierProvider(productId).notifier)
+                  .loadProduct(productId);
+            },
+          ),
+          const CartBadgeIcon(),
+          const SizedBox(width: AppConstants.space8),
         ],
       ),
       body: switch (state.status) {
@@ -57,7 +76,7 @@ class ProductDetailsScreen extends ConsumerWidget {
               'The product you are looking for does not exist.',
           icon: Icons.search_off_rounded,
           action: FilledButton.icon(
-            onPressed: () => context.pop(),
+            onPressed: handleBack,
             icon: const Icon(Icons.arrow_back_rounded),
             label: const Text('Back to Catalogue'),
           ),
@@ -77,7 +96,7 @@ class ProductDetailsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppConstants.space8),
               TextButton.icon(
-                onPressed: () => context.pop(),
+                onPressed: handleBack,
                 icon: const Icon(Icons.arrow_back_rounded),
                 label: const Text('Return to Catalogue'),
               ),
@@ -121,7 +140,10 @@ class ProductDetailsScreen extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Brand / Category Tag
-        Row(
+        Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
             if (product.brand != null && product.brand!.isNotEmpty)
               Container(
@@ -129,9 +151,8 @@ class ProductDetailsScreen extends ConsumerWidget {
                   horizontal: 10,
                   vertical: 4,
                 ),
-                margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withAlpha(20),
+                  color: AppColors.primary.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
@@ -177,7 +198,10 @@ class ProductDetailsScreen extends ConsumerWidget {
         const SizedBox(height: AppConstants.space12),
 
         // Rating & Review count badge
-        Row(
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: AppConstants.space12,
+          runSpacing: 6,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -205,7 +229,6 @@ class ProductDetailsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            const SizedBox(width: AppConstants.space12),
             Text(
               '${product.reviews.length} customer reviews',
               style: theme.textTheme.bodyMedium?.copyWith(
@@ -217,10 +240,11 @@ class ProductDetailsScreen extends ConsumerWidget {
         ),
         const SizedBox(height: AppConstants.space16),
 
-        // Price Section
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
+        // Price Section (Wrap prevents any overflow on small screens or tablet splits)
+        Wrap(
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: AppConstants.space12,
+          runSpacing: AppConstants.space8,
           children: [
             Text(
               '\$${product.discountedPrice.toStringAsFixed(2)}',
@@ -232,7 +256,6 @@ class ProductDetailsScreen extends ConsumerWidget {
               ),
             ),
             if (product.discountPercentage > 0) ...[
-              const SizedBox(width: AppConstants.space12),
               Text(
                 '\$${product.price.toStringAsFixed(2)}',
                 style: TextStyle(
@@ -241,7 +264,6 @@ class ProductDetailsScreen extends ConsumerWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(width: AppConstants.space8),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
@@ -309,8 +331,10 @@ class ProductDetailsScreen extends ConsumerWidget {
       ],
     );
 
+    final Widget scrollContent;
     if (isWideScreen) {
-      return SingleChildScrollView(
+      scrollContent = SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(AppConstants.space24),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -321,18 +345,26 @@ class ProductDetailsScreen extends ConsumerWidget {
           ],
         ),
       );
+    } else {
+      scrollContent = SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.all(AppConstants.space16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            carousel,
+            const SizedBox(height: AppConstants.space20),
+            details,
+          ],
+        ),
+      );
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppConstants.space16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          carousel,
-          const SizedBox(height: AppConstants.space20),
-          details,
-        ],
-      ),
+    return RefreshIndicator(
+      onRefresh: () => ref
+          .read(productDetailsNotifierProvider(productId).notifier)
+          .loadProduct(productId),
+      child: scrollContent,
     );
   }
 
@@ -382,14 +414,18 @@ class ProductDetailsScreen extends ConsumerWidget {
         children: [
           Icon(Icons.check_circle_rounded, size: 16, color: iconColor),
           const SizedBox(width: 6),
-          Text(
-            isLowStock
-                ? 'Only ${product.stock} left in stock - order soon'
-                : 'In Stock (${product.stock} available)',
-            style: TextStyle(
-              color: fgColor,
-              fontWeight: FontWeight.w600,
-              fontSize: 13,
+          Flexible(
+            child: Text(
+              isLowStock
+                  ? 'Only ${product.stock} left in stock - order soon'
+                  : 'In Stock (${product.stock} available)',
+              style: TextStyle(
+                color: fgColor,
+                fontWeight: FontWeight.w600,
+                fontSize: 13,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
         ],
@@ -410,64 +446,87 @@ class ProductDetailsScreen extends ConsumerWidget {
     final totalPrice = product.discountedPrice * state.quantity;
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppConstants.space16,
-        vertical: AppConstants.space12,
-      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
         border: Border(
           top: BorderSide(color: theme.colorScheme.outline, width: 1),
         ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, -3),
+          ),
+        ],
       ),
       child: SafeArea(
-        child: Row(
-          children: [
-            // Accessible Quantity Selector
-            ProductQuantitySelector(
-              quantity: state.quantity,
-              maxStock: product.stock,
-              onIncrement: notifier.incrementQuantity,
-              onDecrement: notifier.decrementQuantity,
-            ),
-            const SizedBox(width: AppConstants.space12),
-
-            // Primary Add to Cart CTA
-            Expanded(
-              child: FilledButton.icon(
-                onPressed: state.isOutOfStock
-                    ? null
-                    : () async {
-                        final added = await ref
-                            .read(cartNotifierProvider.notifier)
-                            .addToCart(product, quantity: state.quantity);
-                        if (context.mounted && added) {
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                'Added ${state.quantity}x ${product.title} to cart',
-                              ),
-                              action: SnackBarAction(
-                                label: 'View Cart',
-                                onPressed: () => context.push(AppRoutes.cart),
-                              ),
-                              duration: const Duration(seconds: 3),
-                            ),
-                          );
-                        }
-                      },
-                icon: const Icon(Icons.add_shopping_cart_rounded, size: 20),
-                label: Text(
-                  state.isOutOfStock
-                      ? 'Out of Stock'
-                      : 'Add to Cart • \$${totalPrice.toStringAsFixed(2)}',
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+        top: false, // Prevents expanding to top status bar
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppConstants.space16,
+            vertical: AppConstants.space12,
+          ),
+          child: SizedBox(
+            height: 48,
+            child: Row(
+              children: [
+                // Accessible Quantity Selector
+                ProductQuantitySelector(
+                  quantity: state.quantity,
+                  maxStock: product.stock,
+                  onIncrement: notifier.incrementQuantity,
+                  onDecrement: notifier.decrementQuantity,
                 ),
-              ),
+                const SizedBox(width: AppConstants.space12),
+
+                // Primary Add to Cart CTA
+                Expanded(
+                  child: SizedBox(
+                    height: 48,
+                    child: FilledButton.icon(
+                      onPressed: state.isOutOfStock
+                          ? null
+                          : () async {
+                              final added = await ref
+                                  .read(cartNotifierProvider.notifier)
+                                  .addToCart(product, quantity: state.quantity);
+                              if (context.mounted && added) {
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).hideCurrentSnackBar();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      'Added ${state.quantity}x ${product.title} to cart',
+                                    ),
+                                    action: SnackBarAction(
+                                      label: 'View Cart',
+                                      onPressed: () =>
+                                          context.go(AppRoutes.cart),
+                                    ),
+                                    duration: const Duration(seconds: 3),
+                                  ),
+                                );
+                              }
+                            },
+                      icon: const Icon(
+                        Icons.add_shopping_cart_rounded,
+                        size: 20,
+                      ),
+                      label: Text(
+                        state.isOutOfStock
+                            ? 'Out of Stock'
+                            : 'Add to Cart • \$${totalPrice.toStringAsFixed(2)}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -37,14 +37,19 @@ class _ProductDetailsSkeletonState extends State<ProductDetailsSkeleton>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final baseColor = theme.colorScheme.surfaceContainerHighest;
+    final isDark = theme.brightness == Brightness.dark;
+    final baseColor = isDark
+        ? const Color(0xFF2A3447)
+        : const Color(0xFFE8E8E8);
 
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        final shimmerColor = baseColor.withAlpha(
-          (_animation.value * 255).round(),
-        );
+        final shimmerColor = Color.lerp(
+          baseColor,
+          isDark ? const Color(0xFF374863) : const Color(0xFFF5F5F5),
+          _animation.value,
+        )!;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(AppConstants.space16),

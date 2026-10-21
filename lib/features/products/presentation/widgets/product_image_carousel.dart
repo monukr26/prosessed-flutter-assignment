@@ -59,7 +59,7 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
           child: Icon(
             Icons.image_not_supported_outlined,
             size: 48,
-            color: theme.colorScheme.onSurfaceVariant.withAlpha(100),
+            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.39),
           ),
         ),
       );
@@ -108,8 +108,8 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                         child: Icon(
                           Icons.broken_image_outlined,
                           size: 48,
-                          color: theme.colorScheme.onSurfaceVariant.withAlpha(
-                            100,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.39,
                           ),
                         ),
                       ),
@@ -129,7 +129,7 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.black.withAlpha(140),
+                      color: Colors.black.withValues(alpha: 0.55),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -161,7 +161,9 @@ class _ProductImageCarouselState extends State<ProductImageCarousel> {
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary
-                      : theme.colorScheme.onSurfaceVariant.withAlpha(60),
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.24,
+                        ),
                   borderRadius: BorderRadius.circular(3),
                 ),
               );
